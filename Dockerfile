@@ -30,7 +30,7 @@ RUN \
   chmod g+x /usr/local/bin/ffmpeg && \
   chmod g+x /usr/local/bin/ffprobe && \
   ln -s /downloads /data && \
-  ln -s /config_mp4_automator/config/autoProcess.ini ${MMT_PATH}/autoProcess.ini && \
+  ln -s /config_mp4_automator/autoProcess.ini ${MMT_PATH}/config/autoProcess.ini && \
   rm -rf \
 	/tmp/* \
 	/var/lib/apt/lists/* \
