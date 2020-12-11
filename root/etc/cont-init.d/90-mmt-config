@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv bash
+
+# update from git
+if [[ "${MMT_UPDATE}" == "true" ]]
+then
+    git -C ${MMT_PATH} pull origin master
+fi
+
+# permissions
+chown -R abc:abc ${MMT_PATH}
+chmod -R 775 ${MMT_PATH}/*.sh
+
+# update autoprocess
+${MMT_PATH}/venv/bin/python3 ${MMT_PATH}/update.py
+
+exit $?

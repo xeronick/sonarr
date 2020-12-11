@@ -1,41 +1,42 @@
-FROM linuxserver/sonarr
+FROM linuxserver/sonarr:preview
+
+ENV MMT_PATH /multi_mp4_transcoder
+ENV MMT_RS Sonarr
+ENV MMT_UPDATE false
 
 RUN \
   apt-get update && \
   apt-get install -y \
   ffmpeg \
   git \
-  python-pip \
+  python3 \
+  python3-pip \
   openssl \
-  python-dev \
-  libffi-dev \
-  libssl-dev \
-  libxml2-dev \
-  libxslt1-dev \
-  zlib1g-dev \
-  php7.2-cli
+  php7.4-cli \
+  nano \
+  wget
 
 RUN \
-  pip install --upgrade pip && \
-  hash -r pip && \
-  pip install requests && \
-  pip install requests[security] && \
-  pip install requests-cache && \
-  pip install babelfish && \
-  pip install tmdbsimple && \
-  pip install 'guessit<2' && \
-  pip install 'subliminal<2' && \
-  pip install stevedore==1.19.1 && \
-  pip install python-dateutil && \
-  pip install qtfaststart && \
-  git clone git://github.com/mdhiggins/sickbeard_mp4_automator.git /sickbeard_mp4_automator/ && \
-  touch /sickbeard_mp4_automator/info.log && \
-  chmod a+rwx -R /sickbeard_mp4_automator && \
+  mkdir ${MMT_PATH} && \
+  git clone https://github.com/xeronick/multi_mp4_transcoder.git ${MMT_PATH} && \
+  python3 -m pip install --user --upgrade pip && \
+  python3 -m pip install --user virtualenv && \
+  python3 -m virtualenv ${MMT_PATH}/venv && \
+  ${MMT_PATH}/venv/bin/pip install -r ${MMT_PATH}/setup/requirements.txt && \
+  wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz -O /tmp/ffmpeg.tar.xz && \
+  tar -xJf /tmp/ffmpeg.tar.xz -C /usr/local/bin --strip-components 1 && \
+  chgrp users /usr/local/bin/ffmpeg && \
+  chgrp users /usr/local/bin/ffprobe && \
+  chmod g+x /usr/local/bin/ffmpeg && \
+  chmod g+x /usr/local/bin/ffprobe && \
   ln -s /downloads /data && \
-  ln -s /config_mp4_automator/autoProcess.ini /sickbeard_mp4_automator/autoProcess.ini && \
+  ln -s /config_mp4_automator/config/autoProcess.ini ${MMT_PATH}/autoProcess.ini && \
   rm -rf \
 	/tmp/* \
 	/var/lib/apt/lists/* \
 	/var/tmp/*
 
 VOLUME config_mp4_automator
+
+COPY extras/ ${MMT_PATH}/
+COPY root/ /
