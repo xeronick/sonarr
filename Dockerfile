@@ -1,4 +1,4 @@
-FROM linuxserver/sonarr
+FROM linuxserver/sonarr:preview
 
 ENV MMT_PATH /multi_mp4_transcoder
 ENV MMT_RS Sonarr
